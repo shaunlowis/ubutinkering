@@ -99,7 +99,11 @@ From here, mount the drive you want to use, using Disks, and set the mount point
 /mnt/ubunas
 ```
 
-After you've created the folder and updated permissions as above.
+After you've created the folder and updated permissions as above:
+
+```
+sudo chmod -R 777 /mnt/ubunas/
+```
 
 
 *Side note; you might want a different file system if you want windows to see this drive too. Ext4 is fine for linux only setups. Choose NFS for windows inclusivity. Remember to also change your fstab entry to have ntfs in stead of ext4 if you do this.*
@@ -119,7 +123,7 @@ sudo vim /etc/samba/smb.conf
 Which is just adding:
 
 ```
-[<SHARENAME>]
+[ubunas]
 path="/mnt/ubunas"
 writeable=yes
 create mask=0777
@@ -132,19 +136,86 @@ To the bottom. See, `example_samba.conf`
 Then you can make a user with;
 
 ```
-sudo smbpasswd -a <USERNAME>
+sudo adduser --no-create-home --disabled-password --disabled-login <USERNAME>
 ```
 
 Where, for my raspberry pi, I've done:
 
 ```
+sudo adduser --no-create-home --disabled-password --disabled-login shaunberrypi
+```
+
+Then do:
+
+```
 sudo smbpasswd -a shaunberrypi
 ```
 
-Then you can add a line like this:
+We need to let this new user have access to the smb folder, with:
 
 ```
-//<PC IP>/mnt/ubunas/ cifs _netdev,username=shaunberrypi,password=<some password>,x-systemd.automount 0 0
+sudo chmod a+rwx /mnt/ubunas/
 ```
 
-to your raspberry pi's fstab.
+Remember to restart the samba service and check it with:
+
+```
+systemctl restart smbd
+
+systemctl status smbd
+```
+
+And make sure the firewall doesn't murder it:
+```
+sudo ufw allow samba
+```
+
+Then you can ssh to the pi and check if you can connect.
+
+```
+ssh raspi@IP
+```
+Make a mount point on your pi with:
+
+```
+sudo mkdir /mnt/smb_share
+
+sudo chmod -R 777 /mnt/smb_share
+```
+
+Install cifs which we will use for mounting samba:
+
+```
+# Should be installed already on raspbian
+sudo apt install cifs-utils
+```
+
+Make a credentials file with the samba login for the raspberry pi:
+
+```
+vim ~/.credentials
+
+# Which should contain:
+username=target_user_name
+password=target_user_password
+
+# Update security of creds:
+chmod 0600 ~/.credentials
+```
+
+Then you can:
+
+```
+vim /etc/fstab
+
+# Add below line to the bottom of the file:
+//<IP>/ubunas /mnt/smb_share cifs credentials=/home/shaun/.credentials 0 0
+```
+
+And do a `sudo mount -a` to refresh fstab.
+
+Test it out, by making a new file on your pi with:
+
+```
+touch /mnt/smb_share/my_first_file.txt
+```
