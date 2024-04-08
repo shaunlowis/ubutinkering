@@ -25,11 +25,18 @@ Check out the page for the game you want to run on protondb, if needed, you can 
 
 **NOTE**: try running the game as-is _before_ you run it with proton. Some games work better natively.
 
+### Adding an extra drive for steam games;
+First check out the disks section below on how to mount a drive easily, but Steam now automagically finds these for you. Navigate to `Settings` -> `Storage` -> `Add Drive` and drives added to /mnt appear. 
+
+<img title="Steam" src="img/Screenshot from 2024-04-08 22-49-47.png">
+
+Then on installing a new game just choose the one you want.
+
 ## VPN, Password Management
 I've been using [Proton VPN](https://protonvpn.com/) and [ProtonPass](https://proton.me/pass). These work well on mobile as well and you get both when you get the paid version of Proton VPN. They both also have ubuntu apps. The company is very active on reddit, so if you have concerns/questions I'd start there. 
 
-## Backup
-I saw [this](https://www.youtube.com/watch?v=W30wzKVwCHo) great video on getting set up. For me, I have a 2TB SSD connected to my PC, so just use that as the backup location.
+## Backup, disks digression
+I saw [this](https://www.youtube.com/watch?v=W30wzKVwCHo) great video on getting set up with an easy set and forget local backup solution using Pika. For me, I have a 2TB SSD connected to my PC, so just use that as the backup location.
 
 The main features that I liked was that I could roll back a folder to a different version. I've been using linux for gaming as well lately and it helps to be able to roll back to a version of your system that works if you break anything.
 
@@ -44,22 +51,28 @@ If you want backups to a spare drive to continue, its a good idea to make your d
 First make a folder, I prefer in `/mnt`, for the drive of interest:
 
 ```
-sudo mkdir /mnt/big_chungus
+sudo mkdir /mnt/big-chungus
+# Need to update permissions
+sudo chmod -R 777 big-chungus/
 ```
 
-I suggest you rename the drives you want to use in the Disks utility, so they're easier to find. Then you can do a 
+I suggest you rename the drives you want to use in the Disks utility, so they're easier to find. You can also change _all_ of your fstab settings in Disks. Just go to:
 
-```
-sudo blkid
-```
+<img title="Disks util" src="img/Screenshot from 2024-04-08 22-25-09.png">
 
-To find the `UUID` of the respective drive you are mounting.
-Check out the `example_fstab` for configuration, but this should also work fine for a dual boot. YMMV if you have a specific partition you want to auto mount though.
+Here you can also select how you want to identify the disk,
+and it will automagically update your fstab.
+
+Update the `Mount Point` field, for me I want this 2TB disk to be accessible at `/mnt/big-chungus`. 
+
+Rather than rebooting to check if your new fstab worked, just click the triangle or the square to mount and unmount the specific drive you've selected. <span style="color:gold"> Fear fstab and boot lockups no longer! </span>
+
+Backing up back to backups, we can now use this big disk for our system backups. The linked YouTube video already covered this really well, so have a look there.
 
 ## Setting up a drive as a NAS
 
 _Why?_
-- Raspberry Pi SD cards are usually small. You can mount a network drive to a pi for crafty things like docker swarm setups.
+- Raspberry Pi SD cards are usually small. You can mount a network drive to a pi for dockering, or for saving data if you have a rpi zero or other IoT things.
 - I wanted to see if I could.
 
 I have a third entry which is a 500Gig SSD, which I want to set up as a home NAS.
@@ -78,16 +91,16 @@ with:
 ip -c -h address
 ```
 
-And then do the needful. Alternatively, if you don't have admin access or for whatever other reason, see [here](https://pimylifeup.com/ubuntu-static-ip-netplan/) for other options.
+And then do the needful. If you don't have admin access or for whatever other reason, see [here](https://pimylifeup.com/ubuntu-static-ip-netplan/) for other options.
 
-From here, mount the drive you want to use, as above in fstab, see the `ubunas` entry in `example_fstab`, then do;
+From here, mount the drive you want to use, using Disks, and set the mount point to:
 
 ```
-# You can swap out vim for nano :)
-vim /etc/fstab
+/mnt/ubunas
 ```
 
-and update to your appropriate entry.
+After you've created the folder and updated permissions as above.
+
 
 *Side note; you might want a different file system if you want windows to see this drive too. Ext4 is fine for linux only setups. Choose NFS for windows inclusivity. Remember to also change your fstab entry to have ntfs in stead of ext4 if you do this.*
 

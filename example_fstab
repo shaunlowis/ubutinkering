@@ -10,6 +10,6 @@ UUID=4c87b42f-de24-422f-8d94-22e926a78396 /               ext4    errors=remount
 # /boot/efi was on /dev/nvme0n1p1 during installation
 UUID=33E8-6430  /boot/efi       vfat    umask=0077      0       1
 /swapfile                                 none            swap    sw              0       0
-UUID=7b89a68f-2756-4912-b956-5b2449ba7719 /mnt/steam ext4 auto,nosuid,noatime,nodev,nofail,errors=remount-r,x-gvfs-show 0 0
-UUID=653bc9ab-dcd8-4d20-b5dd-1adebe3b952c /mnt/big_chungus ext4 auto,nosuid,noatime,nodev,nofail,errors=remount-r,x-gvfs-show 0 0
-UUID=143d7e6a-47a5-478e-ab6c-dc7a2aac3e24 /mnt/ubunas ext4 auto,nosuid,noatime,nodev,nofail,errors=remount-r,x-gvfs-show 0 0
+UUID=653bc9ab-dcd8-4d20-b5dd-1adebe3b952c /mnt/big-chungus ext4 auto,nofail 0 0
+UUID=7b89a68f-2756-4912-b956-5b2449ba7719 /mnt/steam ext4 auto,nofail 0 0
+UUID=143d7e6a-47a5-478e-ab6c-dc7a2aac3e24 /mnt/ubunas ext4 auto,nofail 0 0
